@@ -1,29 +1,48 @@
 #!/usr/bin/env groovy
-import org.apache.commons.lang.StringUtils
 
-def call(String filter_string) {
-  def unzipInstalled = sh(script: 'which $package', returnStatus: true)
-                    def packageManager = ""
- 
-                    println("unzipInstalled: ${unzipInstalled}")             
+def call(String package) {
+  def distribution = ""
+  def packageManager = ""
 
-                    def distroType = sh(script: 'cat /etc/os-release', returnStdout: true)
-                    
-                    if(distroType.contains('ubuntu') || distroType.contains('debian')){
-                        packageManager = 'apt-get'
-                    } else if (distroType.contains('rhel') || distroType.contains('centos')) {
-                           packageManager = 'yum'
-                    } else {
-                        echo "Unsupported Linux distribution"
-                        return
-                    }
+  def osType = System.getProperty("os.name").toLowerCase() 
 
-                    if (unzipInstalled != 0) {
-                           echo "unzip is not installed. Installing..."
-                            sh "sudo ${packageManager} update"
-                            sh "sudo ${packageManager} install -y unzip"
-                            echo "unzip installed successfully."   
-                    } else {
-                        echo "unzip is already installed."
-                    }       
+  if (osType.contains("linux")) {
+    def releaseInfo = new File("/etc/os-release").getText("UTF-8")
+
+    if (releaseInfo.contains("ID=ubuntu") || releaseInfo.contains("ID=debian")) {
+        packageManager = "apt-get"
+        distribution = "debian"
+    } else if (releaseInfo.contains("ID=rhel") || releaseInfo.contains("ID=centos")) {
+        packageManager = "yum"
+        distribution = "redhat"
+    }
+  }
+
+  println "Detected package manager ${packageManager}"
+
+  def process = ["dpkg","-l",package].execute()
+  def output  = process.text 
+  def isPackageInstalled = output.contains("ii ")  
+
+  if(!isPackageInstalled) {
+   println "${package} is not installed, Installing"
+   
+   def installCommand = ""
+
+   if (distribution == "redhat") {
+    installCommand = "sudo ${packageManager} install -y ${package}"
+   } else if (distribution == "debian") {
+    installCommand = "sudo ${packageManager} install -y ${package}"
+   }
+
+   if (installCommand) {
+    def installProcess = installCommand.execute()
+    installProcess.waitFor()
+    println "Package ${package} installation completed."
+   } else {
+        println "Unsupported distribution or package manager."
+   } 
+  } else { 
+    println "Package ${package} is already installed." 
+  }
 }
