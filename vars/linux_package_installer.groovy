@@ -20,7 +20,8 @@ def call(String package_name, int occurrence) {
     }
   }
 
-  println "Detected package manager ${packageManager}"
+  println "Detected distribution is ${distribution}"
+  println "Detected package manager is ${packageManager}"
 
   def process = ["dpkg","-l",package_name].execute()
   def output  = process.text 
@@ -39,7 +40,7 @@ def call(String package_name, int occurrence) {
 
    if (installCommand) {
     def installProcess = installCommand.execute()
-    installProcess.waitFor()
+    print("Install Process : $installProcess")
     println "Package ${package_name} installation completed."
    } else {
         println "Unsupported distribution or package manager."
