@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-def call(String package) {
+def call(String package)  {
   def distribution = ""
   def packageManager = ""
 
