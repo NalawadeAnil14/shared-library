@@ -1,6 +1,8 @@
 #!/usr/bin/env groovy
 
-def call(String package)  {
+import org.apache.commons.lang.StringUtils
+
+def call(String package){
   def distribution = ""
   def packageManager = ""
 
