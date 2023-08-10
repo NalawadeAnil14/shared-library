@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 import org.apache.commons.lang.StringUtils
 
-def call(String package) {
+def call(String filter_string) {
   def unzipInstalled = sh(script: 'which $package', returnStatus: true)
                     def packageManager = ""
  
