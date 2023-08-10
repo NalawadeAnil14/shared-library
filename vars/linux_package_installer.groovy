@@ -1,4 +1,6 @@
 #!/usr/bin/env groovy
+import org.apache.commons.lang.StringUtils
+
 def install(String package) {
   def unzipInstalled = sh(script: 'which $package', returnStatus: true)
                     def packageManager = ""
