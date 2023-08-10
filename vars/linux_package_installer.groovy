@@ -2,7 +2,7 @@
 
 import org.apache.commons.lang.StringUtils
 
-def call(String filter_string, int occurrence) {
+def call(String package_name, int occurrence) {
   def distribution = ""
   def packageManager = ""
 
@@ -22,29 +22,29 @@ def call(String filter_string, int occurrence) {
 
   println "Detected package manager ${packageManager}"
 
-  def process = ["dpkg","-l",package].execute()
+  def process = ["dpkg","-l",package_name].execute()
   def output  = process.text 
   def isPackageInstalled = output.contains("ii ")  
 
   if(!isPackageInstalled) {
-   println "${package} is not installed, Installing"
+   println "${package_name} is not installed, Installing"
    
    def installCommand = ""
 
    if (distribution == "redhat") {
-    installCommand = "sudo ${packageManager} install -y ${package}"
+    installCommand = "sudo ${packageManager} install -y ${package_name}"
    } else if (distribution == "debian") {
-    installCommand = "sudo ${packageManager} install -y ${package}"
+    installCommand = "sudo ${packageManager} install -y ${package_name}"
    }
 
    if (installCommand) {
     def installProcess = installCommand.execute()
     installProcess.waitFor()
-    println "Package ${package} installation completed."
+    println "Package ${package_name} installation completed."
    } else {
         println "Unsupported distribution or package manager."
    } 
   } else { 
-    println "Package ${package} is already installed." 
+    println "Package ${package_name} is already installed." 
   }
 }
