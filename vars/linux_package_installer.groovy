@@ -2,8 +2,7 @@
 
 import org.apache.commons.lang.StringUtils
 
-
-def call(\u0053tring package){
+def call(String filter_string, int occurrence) {
   def distribution = ""
   def packageManager = ""
 
